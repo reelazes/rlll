@@ -18,10 +18,14 @@ class ApiPrefix(BaseModel):
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        cache_strings=False,
+        env_nested_delimiter="__",
+        env_prefix="FASTAPI__",
+    )
     run: RunConfig = RunConfig()
-
     api: ApiPrefix = ApiPrefix()
-
     db: DatabaseConfig
 
 
