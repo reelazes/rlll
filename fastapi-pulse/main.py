@@ -7,6 +7,18 @@ from core.config import settings
 
 from api import router as api_router
 from core.models import db_helper
+from core.models.user import User
+
+app = FastAPI()
+
+@app.post("/create_user")
+async def create_user(user: User):
+    db_helper.create_user(user)
+    return {"message": "user created"}
+
+@app.get("/")
+async def root():
+    return {"message": "67"}
 
 
 @asynccontextmanager
