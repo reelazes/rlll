@@ -5,3 +5,4 @@ __pycache__/
 fastapi-pulse/.env
 *.db
 .idea
+certs/
