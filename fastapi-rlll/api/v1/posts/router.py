@@ -28,6 +28,13 @@ async def get_posts(
     return await service.get_all_posts(session, limit, offset)
 
 
+@router.get("/my", response_model=list[PostRead])
+async def get_my_posts(
+        current_user: User = Depends(get_current_user),
+        session: AsyncSession = Depends(db_helper.session_getter)
+):
+    return await service.get_my_posts(session, current_user.id)
+
 @router.get("/{post_id}", response_model=PostRead)
 async def get_post(
     post_id: int,

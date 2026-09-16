@@ -36,3 +36,7 @@ async def update(session: AsyncSession, post: Post, data: PostUpdate) -> Post:
 async def delete(session: AsyncSession, post: Post) -> None:
     await session.delete(post)
     await session.commit()
+
+async def get_by_user_id(session: AsyncSession, user_id: int) -> list[Post]:
+    result = await session.execute(select(Post).where(Post.user_id == user_id))
+    return list(result.scalars().all())

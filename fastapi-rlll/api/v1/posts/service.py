@@ -42,3 +42,6 @@ async def delete_post(session: AsyncSession, post_id: int, user_id: int) -> None
     if post.user_id != user_id:
         raise PostForbiddenError(f"User {user_id} cannot delete post {post_id}")
     await repository.delete(session, post)
+
+async def get_my_posts(session: AsyncSession, user_id: int) -> list[Post]:
+    return await repository.get_by_user_id(session, user_id)
