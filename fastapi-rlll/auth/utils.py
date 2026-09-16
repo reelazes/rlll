@@ -1,7 +1,11 @@
+from datetime import datetime, timedelta, timezone
+
 import bcrypt
 import jwt
 
 from core.config import settings
+
+ACCESS_TOKEN_TYPE = "access"
 
 
 def encode_jwt(
@@ -39,3 +43,15 @@ def validate_password(
         hashed_password: str,
 ) -> bool:
     return bcrypt.checkpw(password.encode(), hashed_password.encode())
+
+
+def create_access_token(user_id: int, username: str) -> str:
+    now = datetime.now(timezone.utc)
+    payload = {
+        "type": ACCESS_TOKEN_TYPE,
+        "sub": str(user_id),
+        "username": username,
+        "iat": now,
+        "exp": now + timedelta(minutes=settings.auth_jwt.access_token_expire_minutes),
+    }
+    return encode_jwt(payload)
