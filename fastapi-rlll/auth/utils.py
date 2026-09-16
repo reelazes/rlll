@@ -42,7 +42,11 @@ def validate_password(
         password: str,
         hashed_password: str,
 ) -> bool:
-    return bcrypt.checkpw(password.encode(), hashed_password.encode())
+    try:
+        return bcrypt.checkpw(password.encode(), hashed_password.encode())
+    except ValueError:
+        # bcrypt rejects passwords over 72 bytes; no stored hash can match one.
+        return False
 
 
 def create_access_token(user_id: int, username: str) -> str:
