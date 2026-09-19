@@ -1,15 +1,28 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, field_validator
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from core.models.post import TITLE_MAX_LENGTH
+
+CONTENT_MAX_LENGTH = 10_000
+
+Title = Annotated[str, Field(min_length=1, max_length=TITLE_MAX_LENGTH)]
+Content = Annotated[str, Field(min_length=1, max_length=CONTENT_MAX_LENGTH)]
 
 
 class PostCreate(BaseModel):
-    title: str
-    content: str
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    title: Title
+    content: Content
 
 
 class PostUpdate(BaseModel):
-    title: str | None = None
-    content: str | None = None
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    title: Title | None = None
+    content: Content | None = None
 
     @field_validator("title", "content")
     @classmethod

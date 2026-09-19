@@ -10,9 +10,11 @@ from core.models.base import Base
 if TYPE_CHECKING:
     from core.models.user import User
 
+TITLE_MAX_LENGTH = 200
+
 
 class Post(Base):
-    title: Mapped[str] = mapped_column(String(200))
+    title: Mapped[str] = mapped_column(String(TITLE_MAX_LENGTH))
     content: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     user_id: Mapped[int] = mapped_column(
