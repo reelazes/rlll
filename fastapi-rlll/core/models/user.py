@@ -13,6 +13,6 @@ USERNAME_MAX_LENGTH = 30
 
 class User(Base):
     username: Mapped[str] = mapped_column(String(USERNAME_MAX_LENGTH), unique=True)
-    hash_password: Mapped[str] = mapped_column(String(255))
+    password_hash: Mapped[str] = mapped_column(String(255))
 
     posts: Mapped[list["Post"]] = relationship(back_populates="author")

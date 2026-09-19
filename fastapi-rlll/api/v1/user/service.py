@@ -19,9 +19,9 @@ async def create_user(session: AsyncSession, user: UserCreate) -> User:
     if existing is not None:
         raise UserAlreadyExistsError(f"User {user.username} already exists")
 
-    hashed_password = hash_password(user.password)
+    password_hash = hash_password(user.password)
     try:
-        return await repository.create(session, user.username, hashed_password)
+        return await repository.create(session, user.username, password_hash)
     except IntegrityError:
         await session.rollback()
         raise UserAlreadyExistsError(f"User {user.username} already exists")
@@ -31,7 +31,7 @@ async def login(session: AsyncSession, username: str, password: str) -> str:
     if user is None:
         raise InvalidCredentialsError("Invalid username or password")
 
-    if not validate_password(password, user.hash_password):
+    if not validate_password(password, user.password_hash):
         raise InvalidCredentialsError("Invalid username or password")
 
     return create_access_token(user.id, user.username)

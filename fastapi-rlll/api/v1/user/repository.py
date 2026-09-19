@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models.user import User
 
-async def create(session: AsyncSession, username, hashed_password) -> User:
-    user = User(username=username, hash_password=hashed_password)
+async def create(session: AsyncSession, username, password_hash) -> User:
+    user = User(username=username, password_hash=password_hash)
     session.add(user)
     await session.commit()
     await session.refresh(user)
