@@ -2,16 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.v1.user import service
 from api.v1.user.dependencies import get_current_user
-from core.models import db_helper, User
-from api.v1.user.schemas import CreateUser, TokenInfo, UserRead
-from api.v1.user import service, schemas
+from api.v1.user.schemas import TokenInfo, UserCreate, UserRead, UserUpdate
+from core.models import User, db_helper
 
 router = APIRouter(prefix="/user", tags=["user"])
 
 @router.post("/register", response_model=UserRead)
 async def register(
-        user: CreateUser,
+        user: UserCreate,
         session: AsyncSession = Depends(db_helper.session_getter)
 ):
     try:
@@ -35,13 +35,19 @@ async def login(
         )
     return TokenInfo(access_token=token)
 
-@router.get("/me",response_model=UserRead)
-async def current_user(
-    current_user: User = Depends(get_current_user)
-):
+
+@router.get("/me", response_model=UserRead)
+async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-
-
-
+@router.patch("/me", response_model=UserRead)
+async def update_me(
+    user_in: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    try:
+        return await service.update_username(session, current_user, user_in.username)
+    except service.UserAlreadyExistsError:
+        raise HTTPException(status_code=400, detail="Username already taken")

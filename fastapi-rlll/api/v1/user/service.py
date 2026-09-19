@@ -2,7 +2,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.v1.user import repository
-from api.v1.user.schemas import CreateUser
+from api.v1.user.schemas import UserCreate
 from auth.utils import create_access_token, hash_password, validate_password
 from core.models.user import User
 
@@ -14,7 +14,7 @@ class InvalidCredentialsError(Exception):
 
 
 
-async def create_user(session: AsyncSession, user: CreateUser) -> User:
+async def create_user(session: AsyncSession, user: UserCreate) -> User:
     existing = await repository.get_by_username(session, user.username)
     if existing is not None:
         raise UserAlreadyExistsError(f"User {user.username} already exists")
@@ -37,4 +37,10 @@ async def login(session: AsyncSession, username: str, password: str) -> str:
     return create_access_token(user.id, user.username)
 
 
-
+async def update_username(
+    session: AsyncSession, current_user: User, new_username: str
+) -> User:
+    existing = await repository.get_by_username(session, new_username)
+    if existing is not None:
+        raise UserAlreadyExistsError(f"User {new_username} already exists")
+    return await repository.update_username(session, current_user, new_username)
